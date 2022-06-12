@@ -10,13 +10,21 @@ namespace Snakes_and_ladders
         public static Player NewPlayer { get; private set; }
         static void Main(string[] args)
         {
+            string settings;
+            do
+            {
+                Console.WriteLine("Press y if you want automated game or n if you want push buttons");
+                settings = Console.ReadLine();
+            } while (settings != "y" && settings !="n");
+
             Console.ForegroundColor = ConsoleColor.White;
             NewPlayer = new Player();
-            Game game = new Game();
+            Game game = new Game(settings);
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("It's your turn!");
+                if (!game.automated) Console.ReadKey();
                 NewPlayer.PlayerLocation = game.PlayTurn(NewPlayer.PlayerLocation);
                 if (NewPlayer.PlayerLocation == 100) Game.Notify(Game.Event.Victory);
 
@@ -84,6 +92,7 @@ namespace Snakes_and_ladders
 
     public class Game
     {
+        public readonly bool automated;
         public static Dictionary<int, int> Ladders = new Dictionary<int, int>
         {
             {2,38 },
@@ -123,9 +132,11 @@ namespace Snakes_and_ladders
             Defeat
         }
         
-        public Game()
+        public Game(string type)
         {
             Console.WriteLine("Game starts");
+            if (type == "y") automated = true;
+            else automated = false;
         }
 
         public int PlayTurn(int whoseTurn)
